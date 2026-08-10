@@ -22,7 +22,7 @@ yarn add eslint-plugin-reselect-kit --dev
 
 |                             |                                                 |
 | --------------------------- | ----------------------------------------------- |
-| ESLint                      | 9 or 10, flat config only                       |
+| ESLint                      | 8.57, 9 or 10 - flat config or eslintrc         |
 | `@typescript-eslint/parser` | 8.44 or later, configured with type information |
 | TypeScript                  | 5.4 up to 6.0                                   |
 | Node                        | 20, 22 or 24                                    |
@@ -68,6 +68,28 @@ export default [
     },
   },
 ];
+```
+
+### eslintrc
+
+The rules are also exposed on the module itself, so the legacy config format works
+without migrating. List the rules directly - `extends: 'plugin:reselect-kit/all'` is not
+available, because `configs.all` is a flat config array.
+
+```js
+// .eslintrc.js
+module.exports = {
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: true,
+    tsconfigRootDir: __dirname,
+  },
+  plugins: ['reselect-kit'],
+  rules: {
+    'reselect-kit/no-different-props': 'error',
+    'reselect-kit/require-key-selector': 'error',
+  },
+};
 ```
 
 ## What the rules look at

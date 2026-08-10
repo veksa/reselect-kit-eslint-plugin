@@ -1,4 +1,4 @@
-import { reselectKitPlugin } from '../index';
+import { meta, reselectKitPlugin, rules } from '../index';
 import { noDifferentPropsRule } from '../rules/noDifferentProps';
 import { requireKeySelectorRule } from '../rules/requireKeySelector';
 
@@ -31,6 +31,20 @@ describe('reselectKitPlugin', () => {
     expect(Object.keys(config.rules ?? {})).toEqual(
       ruleNames.map((name) => `reselect-kit/${name}`),
     );
+  });
+
+  // The eslintrc engine resolves `plugins: ['reselect-kit']` to this module and
+  // reads the rules straight off it, so they have to sit at the top level too.
+  it('exposes the rules for the eslintrc engine', () => {
+    expect(meta.name).toBe('reselect-kit');
+    expect(rules).toEqual({
+      'no-different-props': noDifferentPropsRule,
+      'require-key-selector': requireKeySelectorRule,
+    });
+  });
+
+  it('serves the same rules to both engines', () => {
+    expect(config.plugins?.['reselect-kit']?.rules).toBe(rules);
   });
 
   it('describes both rules', () => {
