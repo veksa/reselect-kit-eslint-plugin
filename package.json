@@ -12,14 +12,13 @@
     "type": "git",
     "url": "git@github.com:veksa/reselect-kit-eslint-plugin.git"
   },
-  "main": "./lib/cjs/index.js",
+  "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": "./lib/index.d.ts",
-      "import": "./lib/index.js",
-      "default": "./lib/cjs/index.js"
+      "default": "./lib/index.js"
     }
   },
   "sideEffects": false,
@@ -38,7 +37,7 @@
     "compile": "tsc --noEmit",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "build": "shx rm -rf lib && tsc --outDir lib -m es2015 --declaration && tsc --outDir lib/cjs"
+    "build": "shx rm -rf lib && tsc --outDir lib -m node16 --moduleResolution node16 --declaration"
   },
   "dependencies": {
     "@typescript-eslint/utils": "^8.66.0"

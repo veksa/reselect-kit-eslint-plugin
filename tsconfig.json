@@ -15,7 +15,6 @@
     "isolatedModules": true,
     "noUnusedLocals": true,
     "skipLibCheck": true,
-    "resolvePackageJsonExports": true,
     "allowSyntheticDefaultImports": true
   },
   "include": [
