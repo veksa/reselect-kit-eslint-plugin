@@ -41,7 +41,7 @@
     "build": "shx rm -rf lib && tsc --outDir lib -m es2015 --declaration && tsc --outDir lib/cjs"
   },
   "dependencies": {
-    "@typescript-eslint/utils": "^8.44.1"
+    "@typescript-eslint/utils": "^8.66.0"
   },
   "peerDependencies": {
     "@typescript-eslint/parser": "^8.44.1",
@@ -53,13 +53,13 @@
     "@types/node": "^24.5.2",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
-    "@typescript-eslint/parser": "^8.44.1",
-    "@typescript-eslint/rule-tester": "^8.44.1",
+    "@typescript-eslint/parser": "^8.66.0",
+    "@typescript-eslint/rule-tester": "^8.66.0",
     "@veksa/re-reselect": "^5.1.5",
     "@veksa/react-redux": "^9.3.2",
     "@veksa/reselect": "^5.2.2",
     "common-tags": "^1.8.2",
-    "eslint": "^9.36.0",
+    "eslint": "^10.8.1",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "react": "^19.0.0",
@@ -67,6 +67,6 @@
     "reselect-kit": "^1.1.2",
     "shx": "^0.4.0",
     "ts-jest": "^29.4.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   }
 }
