@@ -38,7 +38,7 @@ const create: IRule['create'] = context => {
         CallExpression(callExpression) {
             const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
-            if (isCachedSelectorCreator(tsNode)) {
+            if (isCachedSelectorCreator(tsNode, typeChecker)) {
                 const cachedOptions = getCachedSelectorCreatorOptions(
                     tsNode,
                     typeChecker,
