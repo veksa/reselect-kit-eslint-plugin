@@ -4,7 +4,7 @@ import type {TSESLint} from '@typescript-eslint/utils';
 
 const plugin = {
     meta: {
-        name: 'reselect-utils',
+        name: 'reselect-kit',
     },
     rules: {
         'no-different-props': noDifferentPropsRule,
@@ -14,17 +14,17 @@ const plugin = {
 
 const all: TSESLint.FlatConfig.ConfigArray = [
     {
-        name: 'reselect-utils',
+        name: 'reselect-kit',
         plugins: {
-            'reselect-utils': plugin,
+            'reselect-kit': plugin,
         },
         rules: {
-            'reselect-utils/no-different-props': 'error',
-            'reselect-utils/require-key-selector': 'error',
+            'reselect-kit/no-different-props': 'error',
+            'reselect-kit/require-key-selector': 'error',
         },
     }
 ];
 
-export const reselectUtilsPlugin = {
+export const reselectKitPlugin = {
     configs: {all},
 };

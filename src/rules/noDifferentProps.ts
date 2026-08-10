@@ -141,7 +141,7 @@ const create: IRule['create'] = context => {
                                     const importFix = getImportFix(
                                         fixer,
                                         callExpression,
-                                        '@veksa/reselect-utils',
+                                        'reselect-kit',
                                         specifierNames,
                                     );
 

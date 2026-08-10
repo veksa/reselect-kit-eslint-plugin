@@ -12,7 +12,7 @@ ruleTester.run(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector, stringComposeKeySelectors} from '@veksa/reselect-utils';
+import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 interface StateA {
     stateA: {stateAField: number};
@@ -58,7 +58,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector, stringComposeKeySelectors} from '@veksa/reselect-utils';
+import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 interface StateA {
     stateA: {stateAField: number};
@@ -107,7 +107,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop1: number }>().prop1(),
@@ -126,7 +126,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector, stringComposeKeySelectors} from '@veksa/reselect-utils';
+import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 const selectorA = createCachedSelector(
     [
@@ -167,7 +167,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector, stringComposeKeySelectors} from '@veksa/reselect-utils';
+import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: stringComposeKeySelectors(
@@ -190,7 +190,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector, defaultKeySelector} from '@veksa/reselect-utils';
+import {createPropSelector, defaultKeySelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: defaultKeySelector,
@@ -209,7 +209,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector, stringComposeKeySelectors} from '@veksa/reselect-utils';
+import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 interface StateA {
     stateA: {stateAField: number};
@@ -275,7 +275,7 @@ createCachedSelector(
 });
         `,
                 output: stripIndent`
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 import {createCachedSelector} from '@veksa/re-reselect';
 
 enum Field {
@@ -299,7 +299,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 enum Field {
 }
@@ -315,7 +315,7 @@ createCachedSelector(
         `,
                 output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 enum Field {
 }
@@ -338,7 +338,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 createCachedSelector(
     [
@@ -351,7 +351,7 @@ createCachedSelector(
         `,
                 output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 createCachedSelector(
     [
@@ -371,7 +371,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 createCachedSelector(
     [
@@ -384,7 +384,7 @@ createCachedSelector(
         `,
                 output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 createCachedSelector(
     [
@@ -404,7 +404,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop1: string }>().prop1(),
@@ -421,7 +421,7 @@ createCachedSelector(
         `,
                 output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop1: string }>().prop1(),
@@ -446,7 +446,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop2: number }>().prop2(),
@@ -463,7 +463,7 @@ createCachedSelector(
         `,
                 output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop2: number }>().prop2(),
@@ -488,7 +488,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 createCachedSelector(
     [
@@ -501,7 +501,7 @@ createCachedSelector(
         `,
                 output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 createCachedSelector(
     [
@@ -521,7 +521,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 createCachedSelector(
     [
@@ -535,7 +535,7 @@ createCachedSelector(
         `,
                 output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector, stringComposeKeySelectors} from '@veksa/reselect-utils';
+import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 createCachedSelector(
     [
@@ -559,7 +559,7 @@ createCachedSelector(
             {
                 code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from '@veksa/reselect-utils';
+import {createPropSelector} from 'reselect-kit';
 
 createCachedSelector(
     [],
@@ -570,7 +570,7 @@ createCachedSelector(
         `,
                 output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector, defaultKeySelector} from '@veksa/reselect-utils';
+import {createPropSelector, defaultKeySelector} from 'reselect-kit';
 
 createCachedSelector(
     [],
@@ -596,7 +596,7 @@ ruleTester.run(
         valid: [
             {
                 code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop1: number }>().prop1(),
@@ -611,7 +611,7 @@ createCachedStructuredSelector({
             },
             {
                 code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector, stringComposeKeySelectors} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: stringComposeKeySelectors(
@@ -632,7 +632,7 @@ createCachedStructuredSelector({
         invalid: [
             {
                 code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 createCachedStructuredSelector({
     prop1: (state: unknown, props: { prop1: number }) => props.prop1,
@@ -641,7 +641,7 @@ createCachedStructuredSelector({
 });
       `,
                 output: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 createCachedStructuredSelector({
     prop1: (state: unknown, props: { prop1: number }) => props.prop1,
@@ -657,7 +657,7 @@ createCachedStructuredSelector({
             },
             {
                 code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop1: string }>().prop1(),
@@ -670,7 +670,7 @@ createCachedStructuredSelector({
 });
       `,
                 output: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop1: string }>().prop1(),
@@ -691,7 +691,7 @@ createCachedStructuredSelector({
             },
             {
                 code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop2: number }>().prop2(),
@@ -704,7 +704,7 @@ createCachedStructuredSelector({
 });
       `,
                 output: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop2: number }>().prop2(),
@@ -725,7 +725,7 @@ createCachedStructuredSelector({
             },
             {
                 code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 createCachedStructuredSelector({
     prop1: (state: unknown, props: { prop1: number }) => props.prop1,
@@ -734,7 +734,7 @@ createCachedStructuredSelector({
 });
       `,
                 output: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 createCachedStructuredSelector({
     prop1: (state: unknown, props: { prop1: number }) => props.prop1,
@@ -758,7 +758,7 @@ ruleTester.run(
         valid: [
             {
                 code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop1: number }>().prop1(),
@@ -773,7 +773,7 @@ createCachedSequenceSelector([
             },
             {
                 code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector, stringComposeKeySelectors} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: stringComposeKeySelectors(
@@ -794,7 +794,7 @@ createCachedSequenceSelector([
         invalid: [
             {
                 code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 createCachedSequenceSelector([
     (state: unknown, props: { prop1: number }) => props.prop1,
@@ -803,7 +803,7 @@ createCachedSequenceSelector([
 });
       `,
                 output: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 createCachedSequenceSelector([
     (state: unknown, props: { prop1: number }) => props.prop1,
@@ -819,7 +819,7 @@ createCachedSequenceSelector([
             },
             {
                 code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop1: string }>().prop1(),
@@ -832,7 +832,7 @@ createCachedSequenceSelector([
 });
       `,
                 output: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop1: string }>().prop1(),
@@ -853,7 +853,7 @@ createCachedSequenceSelector([
             },
             {
                 code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop2: number }>().prop2(),
@@ -866,7 +866,7 @@ createCachedSequenceSelector([
 });
       `,
                 output: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
     keySelector: createPropSelector<{ prop2: number }>().prop2(),
@@ -887,7 +887,7 @@ createCachedSequenceSelector([
             },
             {
                 code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 createCachedSequenceSelector([
     (state: unknown, props: { prop1: number }) => props.prop1,
@@ -896,7 +896,7 @@ createCachedSequenceSelector([
 });
       `,
                 output: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from '@veksa/reselect-utils';
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 createCachedSequenceSelector([
     (state: unknown, props: { prop1: number }) => props.prop1,

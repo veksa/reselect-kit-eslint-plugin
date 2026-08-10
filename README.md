@@ -1,49 +1,64 @@
-# @veksa/eslint-plugin-reselect-utils
+# eslint-plugin-reselect-kit
 
-ESLint plugin to enforce best practices when using reselect and reselect-utils libraries
+ESLint plugin to enforce best practices when using reselect and reselect-kit libraries
 
 ## Installation
 
-@veksa/eslint-plugin-reselect-utils requires TypeScript 5.8 or later.
+eslint-plugin-reselect-kit requires TypeScript 5.8 or later.
 
 ### Using npm or yarn
 
 ```bash
 # npm
-npm install @veksa/eslint-plugin-reselect-utils --save-dev
+npm install eslint-plugin-reselect-kit --save-dev
 
 # yarn
-yarn add @veksa/eslint-plugin-reselect-utils --dev
+yarn add eslint-plugin-reselect-kit --dev
 ```
 
 ## Features
 
-- Static analysis for reselect and reselect-utils selectors
+- Static analysis for reselect and reselect-kit selectors
 - Enforces consistent selector patterns
 - Automatic fixing capabilities for common issues
 - TypeScript support
 
 ## Configuration
 
-Add the plugin to your `.eslintrc` configuration file:
+The plugin ships a flat config. Add it to your `eslint.config.js`:
 
-```json
-{
-  "plugins": ["@veksa/reselect-utils"],
-  "extends": ["plugin:@veksa/reselect-utils/recommended"]
-}
+```js
+import tsParser from '@typescript-eslint/parser';
+import {reselectKitPlugin} from 'eslint-plugin-reselect-kit';
+
+export default [
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: './tsconfig.json',
+      },
+    },
+  },
+  ...reselectKitPlugin.configs.all,
+];
 ```
 
-Or configure the rules manually:
+Both rules rely on type information, so `@typescript-eslint/parser` must be configured with a `project`.
 
-```json
-{
-  "plugins": ["@veksa/reselect-utils"],
-  "rules": {
-    "reselect-utils/no-different-props": "error",
-    "reselect-utils/require-key-selector": "error"
-  }
-}
+To tune severity, override the rules after spreading the config:
+
+```js
+export default [
+  ...reselectKitPlugin.configs.all,
+  {
+    rules: {
+      'reselect-kit/no-different-props': 'error',
+      'reselect-kit/require-key-selector': 'warn',
+    },
+  },
+];
 ```
 
 ## Rules
@@ -75,7 +90,7 @@ Ensures that cached selectors always have a key selector specified.
 
 ```js
 import { createCachedSelector } from '@veksa/re-reselect';
-import { createPropSelector } from '@veksa/reselect-utils';
+import { createPropSelector } from 'reselect-kit';
 
 // Good - props match in selector and key selector
 const goodSelector = createCachedSelector(
