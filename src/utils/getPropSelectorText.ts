@@ -1,9 +1,9 @@
-import {ParameterInfo} from './getParametersFromProps';
+import { ParameterInfo } from './getParametersFromProps';
 
 export const getPropSelectorText = (selectorParameters: ParameterInfo) => {
-    const {name, typeString, isOptional} = selectorParameters;
+  const { name, typeString, isOptional } = selectorParameters;
 
-    return isOptional
-        ? `createPropSelector<{ ${name}?: ${typeString} }>().${name}()`
-        : `createPropSelector<{ ${name}: ${typeString} }>().${name}()`;
+  return isOptional
+    ? `createPropSelector<{ ${name}?: ${typeString} }>().${name}()`
+    : `createPropSelector<{ ${name}: ${typeString} }>().${name}()`;
 };

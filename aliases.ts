@@ -4,15 +4,15 @@
  *
  * Only used by the rule tests, through `file.ts`.
  */
-import {createCachedSelector} from '@veksa/re-reselect';
+import { createCachedSelector } from '@veksa/re-reselect';
 
-export {createCachedSelector as cached} from '@veksa/re-reselect';
+export { createCachedSelector as cached } from '@veksa/re-reselect';
 export {
-    createCachedSequenceSelector as cachedSeq,
-    createCachedStructuredSelector as cachedStruct,
-    createPropSelector as prop,
-    defaultKeySelector,
-    stringComposeKeySelectors,
+  createCachedSequenceSelector as cachedSeq,
+  createCachedStructuredSelector as cachedStruct,
+  createPropSelector as prop,
+  defaultKeySelector,
+  stringComposeKeySelectors,
 } from 'reselect-kit';
 
 // Renamed by assignment rather than by an import alias.

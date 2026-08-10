@@ -1,7 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "include": [
-    "file.ts",
-    "aliases.ts"
-  ]
+  "include": ["file.ts", "aliases.ts"]
 }

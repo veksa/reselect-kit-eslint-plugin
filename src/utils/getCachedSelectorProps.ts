@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import {getSelectorProps, getTypeArguments} from './getSelectorProps';
+import { getSelectorProps, getTypeArguments } from './getSelectorProps';
 
 /**
  * Props the cached selector requires on its own.
@@ -15,34 +15,23 @@ import {getSelectorProps, getTypeArguments} from './getSelectorProps';
  * is typed with.
  */
 export const getCachedSelectorProps = (
-    callExpression: ts.CallExpression,
-    typeChecker: ts.TypeChecker,
+  callExpression: ts.CallExpression,
+  typeChecker: ts.TypeChecker,
 ): ts.Symbol[] => {
-    const creatorType = typeChecker.getTypeAtLocation(callExpression.expression);
+  const creatorType = typeChecker.getTypeAtLocation(callExpression.expression);
 
-    const [signature] = typeChecker.getSignaturesOfType(
-        creatorType,
-        ts.SignatureKind.Call,
-    );
-    const [keyParams] = signature?.getTypeParameters() ?? [];
+  const [signature] = typeChecker.getSignaturesOfType(creatorType, ts.SignatureKind.Call);
+  const [keyParams] = signature?.getTypeParameters() ?? [];
 
-    const defaultType = keyParams
-        ? typeChecker.getDefaultFromTypeParameter(keyParams)
-        : undefined;
+  const defaultType = keyParams ? typeChecker.getDefaultFromTypeParameter(keyParams) : undefined;
 
-    if (defaultType) {
-        const [props] = getTypeArguments(
-            defaultType as ts.TypeReference,
-            typeChecker,
-        );
+  if (defaultType) {
+    const [props] = getTypeArguments(defaultType as ts.TypeReference, typeChecker);
 
-        return props === undefined ? [] : typeChecker.getPropertiesOfType(props);
-    }
+    return props === undefined ? [] : typeChecker.getPropertiesOfType(props);
+  }
 
-    // Typings that do not carry the props on the creator still expose them on
-    // the built selector.
-    return getSelectorProps(
-        typeChecker.getTypeAtLocation(callExpression),
-        typeChecker,
-    );
+  // Typings that do not carry the props on the creator still expose them on
+  // the built selector.
+  return getSelectorProps(typeChecker.getTypeAtLocation(callExpression), typeChecker);
 };
