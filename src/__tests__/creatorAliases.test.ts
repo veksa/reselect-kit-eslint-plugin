@@ -137,6 +137,39 @@ cachedSeq([
                     },
                 ],
             },
+            // Renamed by assignment instead of by an import alias.
+            {
+                code: stripIndent`
+import {cachedConst, prop} from './aliases';
+
+cachedConst(
+    [
+        (state: unknown, props: { prop1: number }) => props.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: prop<{ prop2: string }>().prop2(),
+});
+`,
+                output: stripIndent`
+import {createPropSelector} from 'reselect-kit';
+import {cachedConst, prop} from './aliases';
+
+cachedConst(
+    [
+        (state: unknown, props: { prop1: number }) => props.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+`,
+                errors: [
+                    {
+                        messageId: DifferentPropsErrors.DifferentProps,
+                    },
+                ],
+            },
         ],
     },
 );
@@ -153,6 +186,20 @@ import {cachedStruct, defaultKeySelector} from './aliases';
 cachedStruct({
     a: () => 1,
 })({
+    keySelector: defaultKeySelector,
+});
+`,
+            },
+            {
+                code: stripIndent`
+import {cachedConst, defaultKeySelector} from './aliases';
+
+cachedConst(
+    [
+        () => 1,
+    ],
+    () => 1,
+)({
     keySelector: defaultKeySelector,
 });
 `,

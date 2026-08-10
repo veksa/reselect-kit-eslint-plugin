@@ -6,6 +6,7 @@ import {getImportDeclaration} from '../utils/getImportDeclaration';
 import {getParametersFromProps, unknownPropType} from '../utils/getParametersFromProps';
 import {isPropOptional} from '../utils/isPropOptional';
 import {getKeySelector} from '../utils/getKeySelector';
+import {isCachedSelectorCreator} from '../utils/isCachedSelectorCreator';
 
 const stubChecker = (overrides: object) => overrides as unknown as ts.TypeChecker;
 const stubType = () => ({}) as ts.Type;
@@ -177,6 +178,67 @@ describe('isPropOptional', () => {
         const prop = stubSymbol({getDeclarations: () => undefined});
 
         expect(isPropOptional(prop)).toBeFalsy();
+    });
+});
+
+describe('isCachedSelectorCreator', () => {
+    const callOf = (callee: object) => ({
+        expression: {
+            kind: ts.SyntaxKind.CallExpression,
+            expression: callee,
+        },
+    }) as unknown as ts.CallExpression;
+
+    it('treats a callee without declarations as unrelated', () => {
+        const callee = {kind: ts.SyntaxKind.Identifier};
+        const checker = stubChecker({
+            getSymbolAtLocation: () => stubSymbol({
+                flags: 0,
+                getName: () => 'somethingElse',
+                getDeclarations: () => undefined,
+            }),
+        });
+
+        expect(isCachedSelectorCreator(callOf(callee), checker)).toBe(false);
+    });
+
+    it('keeps the binding`s own name when its source cannot be resolved', () => {
+        const initializer = {kind: ts.SyntaxKind.Identifier} as ts.Identifier;
+        const callee = {kind: ts.SyntaxKind.Identifier};
+        const symbol = stubSymbol({
+            flags: 0,
+            getName: () => 'createCachedSelector',
+            getDeclarations: () => [{
+                kind: ts.SyntaxKind.VariableDeclaration,
+                initializer,
+            }],
+        });
+        const checker = stubChecker({
+            getSymbolAtLocation: (node: ts.Node) => (node === initializer ? undefined : symbol),
+        });
+
+        expect(isCachedSelectorCreator(callOf(callee), checker)).toBe(true);
+    });
+
+    it('stops when renamed bindings refer back to each other', () => {
+        const identifier = {kind: ts.SyntaxKind.Identifier} as ts.Identifier;
+        const looping = stubSymbol({
+            flags: 0,
+            getName: () => 'looping',
+            getDeclarations: () => [{
+                kind: ts.SyntaxKind.VariableDeclaration,
+                initializer: identifier,
+            }],
+        });
+        const checker = stubChecker({getSymbolAtLocation: () => looping});
+        const callExpression = {
+            expression: {
+                kind: ts.SyntaxKind.CallExpression,
+                expression: identifier,
+            },
+        } as unknown as ts.CallExpression;
+
+        expect(isCachedSelectorCreator(callExpression, checker)).toBe(false);
     });
 });
 

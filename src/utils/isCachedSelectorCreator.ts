@@ -7,12 +7,48 @@ const cachedSelectorCreators = [
 ];
 
 /**
- * Name the callee was declared with, following re-exports.
+ * Symbol the callee ultimately refers to.
  *
- * Projects routinely funnel the creators through a barrel module and shorten
- * them on the way out (`createCachedStructuredSelector as cachedStruct`), so
- * matching the identifier as written would silently skip those call sites.
+ * Projects routinely funnel the creators through a barrel module and rename
+ * them on the way out, either as an import alias
+ * (`createCachedStructuredSelector as cachedStruct`) or by assigning them to a
+ * fresh binding (`export const cachedStruct = createCachedStructuredSelector`).
+ * Both hops have to be followed, or those call sites are silently skipped.
  */
+const resolveDeclaredSymbol = (
+    symbol: ts.Symbol,
+    typeChecker: ts.TypeChecker,
+    seen: Set<ts.Symbol>,
+): ts.Symbol => {
+    if (seen.has(symbol)) {
+        return symbol;
+    }
+    seen.add(symbol);
+
+    if (symbol.flags & ts.SymbolFlags.Alias) {
+        return resolveDeclaredSymbol(
+            typeChecker.getAliasedSymbol(symbol),
+            typeChecker,
+            seen,
+        );
+    }
+
+    const [declaration] = symbol.getDeclarations() ?? [];
+    const initializer = declaration !== undefined && ts.isVariableDeclaration(declaration)
+        ? declaration.initializer
+        : undefined;
+
+    if (initializer !== undefined && ts.isIdentifier(initializer)) {
+        const initializerSymbol = typeChecker.getSymbolAtLocation(initializer);
+
+        if (initializerSymbol !== undefined) {
+            return resolveDeclaredSymbol(initializerSymbol, typeChecker, seen);
+        }
+    }
+
+    return symbol;
+};
+
 const getDeclaredName = (
     expression: ts.Expression,
     typeChecker: ts.TypeChecker,
@@ -23,11 +59,7 @@ const getDeclaredName = (
         return undefined;
     }
 
-    if (symbol.flags & ts.SymbolFlags.Alias) {
-        return typeChecker.getAliasedSymbol(symbol).getName();
-    }
-
-    return symbol.getName();
+    return resolveDeclaredSymbol(symbol, typeChecker, new Set()).getName();
 };
 
 export const isCachedSelectorCreator = (
