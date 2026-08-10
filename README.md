@@ -1,12 +1,14 @@
 # eslint-plugin-reselect-kit
 
-ESLint plugin to enforce best practices when using reselect and reselect-kit libraries
+ESLint rules that keep cached selectors and their key selectors in sync when using
+[reselect-kit](https://github.com/veksa/reselect-kit) and
+[@veksa/re-reselect](https://github.com/veksa/re-reselect).
+
+A cached selector memoizes per key, so a key selector that reads different props than
+the selector itself produces cache entries that never hit - or collide. Both rules are
+type driven and both can fix what they find.
 
 ## Installation
-
-eslint-plugin-reselect-kit requires TypeScript 5.8 or later.
-
-### Using npm or yarn
 
 ```bash
 # npm
@@ -16,99 +18,176 @@ npm install eslint-plugin-reselect-kit --save-dev
 yarn add eslint-plugin-reselect-kit --dev
 ```
 
-## Features
+### Requirements
 
-- Static analysis for reselect and reselect-kit selectors
-- Enforces consistent selector patterns
-- Automatic fixing capabilities for common issues
-- TypeScript support
+| | |
+|---|---|
+| ESLint | 9 or later, flat config only |
+| `@typescript-eslint/parser` | 8.44 or later, configured with type information |
+| TypeScript | 5.9 or later |
 
-## Configuration
+Verified against ESLint 10.8 and `@typescript-eslint` 8.66.
 
-The plugin ships a flat config. Add it to your `eslint.config.js`:
+## Setup
+
+Both rules read the types of your selectors, so the parser has to be pointed at a
+`tsconfig.json`. Without type information they report nothing.
 
 ```js
+// eslint.config.js
 import tsParser from '@typescript-eslint/parser';
 import {reselectKitPlugin} from 'eslint-plugin-reselect-kit';
 
 export default [
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        project: './tsconfig.json',
-      },
+    {
+        files: ['**/*.ts', '**/*.tsx'],
+        languageOptions: {
+            parser: tsParser,
+            parserOptions: {
+                project: './tsconfig.json',
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
     },
-  },
-  ...reselectKitPlugin.configs.all,
+    ...reselectKitPlugin.configs.all,
 ];
 ```
 
-Both rules rely on type information, so `@typescript-eslint/parser` must be configured with a `project`.
-
-To tune severity, override the rules after spreading the config:
+`configs.all` registers the plugin under the `reselect-kit` namespace and turns both
+rules on as errors. To change a severity or pass options, add a block after it:
 
 ```js
 export default [
-  ...reselectKitPlugin.configs.all,
-  {
-    rules: {
-      'reselect-kit/no-different-props': 'error',
-      'reselect-kit/require-key-selector': 'warn',
+    ...reselectKitPlugin.configs.all,
+    {
+        rules: {
+            'reselect-kit/require-key-selector': 'warn',
+            'reselect-kit/no-different-props': ['error', {composer: 'arrayComposeKeySelectors'}],
+        },
     },
-  },
 ];
 ```
 
-## Rules
+## What the rules look at
 
-### no-different-props
+Every call of the shape `creator(...)(options)` is checked, where `creator` is one of
+`createCachedSelector`, `createCachedStructuredSelector` or
+`createCachedSequenceSelector`.
 
-Ensures that cached selectors and key selectors use the same props.
+The creator is resolved through its import, so a barrel module that renames it on the
+way out is still checked:
 
-**Rule details:**
-- Checks that cached selectors and their key selectors access the same properties
-- Can automatically fix issues by generating correct key selectors
+```ts
+// utils/redux.ts
+export {createCachedStructuredSelector as cachedStruct} from 'reselect-kit';
 
-**Options:**
-```js
-{
-  "composer": "stringComposeKeySelectors" // Default
-}
+// anywhere.ts - checked, even though the call says `cachedStruct`
+cachedStruct({...})({keySelector: ...});
 ```
 
-### require-key-selector
+Options handed over as an expression (`creator(...)(getOptions())`) are still reported,
+but cannot be fixed automatically - there is no object literal to rewrite.
 
-Ensures that cached selectors always have a key selector specified.
+## Rules
 
-**Rule details:**
-- Requires key selectors for proper memoization when using createCachedSelector
-- Can automatically add default key selectors
+### `reselect-kit/no-different-props`
 
-## Basic Usage
+Reports a cached selector whose key selector does not read exactly the props the
+selector itself declares - a different name, a different type, or a different
+optionality all count.
+
+```ts
+import {createCachedSelector} from '@veksa/re-reselect';
+import {createPropSelector} from 'reselect-kit';
+
+// error: selector parameters = { itemId: number }, key selector parameters = { id: number }
+createCachedSelector(
+    [
+        (state: State, props: {itemId: number}) => state.items[props.itemId],
+    ],
+    item => item,
+)({
+    keySelector: createPropSelector<{id: number}>().id(),
+});
+```
+
+The fix rewrites `keySelector` to match the selector and adds the imports it needs:
+
+```ts
+createCachedSelector(
+    [
+        (state: State, props: {itemId: number}) => state.items[props.itemId],
+    ],
+    item => item,
+)({
+    keySelector: createPropSelector<{ itemId: number }>().itemId(),
+});
+```
+
+A selector that takes no props at all is fixed to `defaultKeySelector`. When it takes
+more than one, the props are composed:
+
+```ts
+keySelector: stringComposeKeySelectors(
+    createPropSelector<{ accountId: number }>().accountId(),
+    createPropSelector<{ symbolId: number }>().symbolId()
+),
+```
+
+Hand written key selectors are compared the same way, so
+`(state: State, props: {itemId: number}) => props.itemId` is accepted where the props
+line up.
+
+#### Options
+
+| Option | Default | Description |
+|---|---|---|
+| `composer` | `'stringComposeKeySelectors'` | Helper the fix wraps multiple prop selectors in. Set it to `'arrayComposeKeySelectors'`, or to your own composer, and the fix imports that name instead. |
 
 ```js
-import { createCachedSelector } from '@veksa/re-reselect';
-import { createPropSelector } from 'reselect-kit';
+'reselect-kit/no-different-props': ['error', {composer: 'arrayComposeKeySelectors'}]
+```
 
-// Good - props match in selector and key selector
-const goodSelector = createCachedSelector(
-  state => state.items,
-  (state, props) => props.id,
-  (items, id) => items[id]
-)({
-  keySelector: createPropSelector('id')
-});
+### `reselect-kit/require-key-selector`
 
-// Bad - props don't match between selector and key selector
-const badSelector = createCachedSelector(
-  state => state.items,
-  (state, props) => props.id,
-  (items, id) => items[id]
+Reports a cached selector created without a `keySelector`, which leaves it memoizing
+under a single shared key.
+
+```ts
+// error: Cached selector can`t work without key selector
+createCachedSelector(
+    [
+        (state: State) => state.items,
+    ],
+    items => items,
+)({});
+```
+
+The fix inserts `defaultKeySelector` and imports it:
+
+```ts
+import {defaultKeySelector} from 'reselect-kit';
+
+createCachedSelector(
+    [
+        (state: State) => state.items,
+    ],
+    items => items,
 )({
-  keySelector: createPropSelector('differentId') // ESLint will flag this
+    keySelector: defaultKeySelector
 });
+```
+
+A `keySelector` arriving through a spread (`{...createDefaultOptions()}`) satisfies the
+rule.
+
+## Development
+
+```bash
+yarn compile        # type check
+yarn test           # run the rule tests
+yarn test:coverage  # the suite is kept at 100%
+yarn build          # emit lib/
 ```
 
 ## Contributing
