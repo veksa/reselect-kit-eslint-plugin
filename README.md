@@ -82,6 +82,8 @@ re-binding are followed:
 
 ```ts
 // utils/redux.ts
+import {createCachedSelector} from '@veksa/re-reselect';
+
 export {createCachedStructuredSelector as cachedStruct} from 'reselect-kit';
 export const cachedSelector = createCachedSelector;
 
