@@ -89,6 +89,72 @@ createCachedSelector(
             },
         ],
         invalid: [
+            // Input selectors passed variadically rather than as an array.
+            {
+                code: stripIndent`
+import {createCachedSelector} from '@veksa/re-reselect';
+import {createPropSelector} from 'reselect-kit';
+
+createCachedSelector(
+    (state: unknown, props: { prop1: number }) => props.prop1,
+    (prop1: number) => prop1,
+)({
+    keySelector: createPropSelector<{ prop2: string }>().prop2(),
+});
+`,
+                output: stripIndent`
+import {createCachedSelector} from '@veksa/re-reselect';
+import {createPropSelector} from 'reselect-kit';
+
+createCachedSelector(
+    (state: unknown, props: { prop1: number }) => props.prop1,
+    (prop1: number) => prop1,
+)({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+`,
+                errors: [
+                    {
+                        messageId: Errors.DifferentProps,
+                    },
+                ],
+            },
+            // A selector taking several parametric arguments rather than one
+            // props object: only the first is a props bag the helpers can build
+            // a key selector from.
+            {
+                code: stripIndent`
+import {createCachedSelector} from '@veksa/re-reselect';
+import {createPropSelector} from 'reselect-kit';
+
+createCachedSelector(
+    [
+        (state: unknown, first: { prop1: number }, second: { prop2: string }) => first.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: createPropSelector<{ prop9: boolean }>().prop9(),
+});
+`,
+                output: stripIndent`
+import {createCachedSelector} from '@veksa/re-reselect';
+import {createPropSelector} from 'reselect-kit';
+
+createCachedSelector(
+    [
+        (state: unknown, first: { prop1: number }, second: { prop2: string }) => first.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+`,
+                errors: [
+                    {
+                        messageId: Errors.DifferentProps,
+                    },
+                ],
+            },
             // An array prop has to survive the round trip through the fix text.
             {
                 code: stripIndent`
