@@ -1,26 +1,18 @@
 {
   "compilerOptions": {
-    "jsx": "react",
     "rootDir": "src",
-    "target": "es2015",
+    "target": "es2019",
     "module": "es2015",
     "moduleResolution": "bundler",
-    "lib": [
-      "es2019"
-    ],
+    "lib": ["es2019"],
     "strict": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "downlevelIteration": true,
     "isolatedModules": true,
     "noUnusedLocals": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "src/__tests__/**"
-  ]
+  "include": ["src"],
+  "exclude": ["src/__tests__/**"]
 }

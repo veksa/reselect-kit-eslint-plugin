@@ -1,20 +1,17 @@
-import {stripIndent} from 'common-tags';
-import {createRuleTester} from '../utils/ruleTester';
-import {defaultComposer, Errors, noDifferentPropsRule} from '../rules/noDifferentProps';
+import { stripIndent } from 'common-tags';
+import { createRuleTester } from './ruleTester';
+import { defaultComposer, Errors, noDifferentPropsRule } from '../rules/noDifferentProps';
 
 const ruleTester = createRuleTester();
 
 // The composer only shows up once a selector needs more than one prop, since a
 // single prop needs nothing to compose it with.
-ruleTester.run(
-    'no-different-props-composer-option',
-    noDifferentPropsRule,
+ruleTester.run('no-different-props-composer-option', noDifferentPropsRule, {
+  valid: [],
+  invalid: [
     {
-        valid: [],
-        invalid: [
-            {
-                options: [{composer: 'arrayComposeKeySelectors'}],
-                code: stripIndent`
+      options: [{ composer: 'arrayComposeKeySelectors' }],
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -28,7 +25,7 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: number }>().prop1(),
 });
 `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, arrayComposeKeySelectors} from 'reselect-kit';
 
@@ -45,15 +42,15 @@ createCachedSelector(
     ),
 });
 `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            // No option given: the default composer is used.
-            {
-                code: stripIndent`
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    // No option given: the default composer is used.
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -67,7 +64,7 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: number }>().prop1(),
 });
 `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, ${defaultComposer}} from 'reselect-kit';
 
@@ -84,12 +81,11 @@ createCachedSelector(
     ),
 });
 `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-        ],
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
     },
-);
+  ],
+});

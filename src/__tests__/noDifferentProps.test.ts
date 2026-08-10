@@ -1,16 +1,13 @@
-import {stripIndent} from 'common-tags';
-import {createRuleTester} from '../utils/ruleTester';
-import {Errors, noDifferentPropsRule} from '../rules/noDifferentProps';
+import { stripIndent } from 'common-tags';
+import { createRuleTester } from './ruleTester';
+import { Errors, noDifferentPropsRule } from '../rules/noDifferentProps';
 
 const ruleTester = createRuleTester();
 
-ruleTester.run(
-    'no-different-props-create-cached-selector',
-    noDifferentPropsRule,
+ruleTester.run('no-different-props-create-cached-selector', noDifferentPropsRule, {
+  valid: [
     {
-        valid: [
-            {
-                code: stripIndent`
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
@@ -54,9 +51,9 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: number }>().prop1()
 });
         `,
-            },
-            {
-                code: stripIndent`
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
@@ -103,9 +100,9 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: EnumType }>().prop1()
 });
         `,
-            },
-            {
-                code: stripIndent`
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -122,9 +119,9 @@ createCachedSelector(
     ...getDefaultOptions(),
 });
         `,
-            },
-            {
-                code: stripIndent`
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
@@ -163,9 +160,9 @@ createCachedSelector(
     ),
 });
         `,
-            },
-            {
-                code: stripIndent`
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
@@ -186,9 +183,9 @@ createCachedSelector(
     ...getDefaultOptions(),
 });
         `,
-            },
-            {
-                code: stripIndent`
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, defaultKeySelector} from 'reselect-kit';
 
@@ -205,9 +202,9 @@ createCachedSelector(
     ...getDefaultOptions(),
 });
         `,
-            },
-            {
-                code: stripIndent`
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
@@ -255,11 +252,11 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1?: EnumType }>().prop1(),
 });
         `,
-            },
-        ],
-        invalid: [
-            {
-                code: stripIndent`
+    },
+  ],
+  invalid: [
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 
 enum Field {
@@ -274,7 +271,7 @@ createCachedSelector(
     keySelector: (state: unknown, props: { prop2?: Field }) => props.prop2,
 });
         `,
-                output: stripIndent`
+      output: stripIndent`
 import {createPropSelector} from 'reselect-kit';
 import {createCachedSelector} from '@veksa/re-reselect';
 
@@ -290,14 +287,14 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1?: Field | undefined }>().prop1(),
 });
         `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -313,7 +310,7 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: string }>().prop1(),
 });
         `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -329,14 +326,14 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1?: Field | undefined }>().prop1(),
 });
         `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -349,7 +346,7 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: string }>().prop1(),
 });
         `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -362,14 +359,14 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1?: number | undefined }>().prop1(),
 });
         `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -382,7 +379,7 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: string }>().prop1(),
 });
         `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -395,14 +392,14 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: number }>().prop1(),
 });
         `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -419,7 +416,7 @@ createCachedSelector(
     ...getDefaultOptions()
 });
         `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -437,14 +434,14 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: number }>().prop1()
 });
         `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -461,7 +458,7 @@ createCachedSelector(
     ...getDefaultOptions()
 });
         `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -479,14 +476,14 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: number }>().prop1()
 });
         `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -499,7 +496,7 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop2: number }>().prop2(),
 });
         `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -512,14 +509,14 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop1: number }>().prop1(),
 });
         `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -533,7 +530,7 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop2: number }>().prop2(),
 });
         `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
@@ -550,14 +547,14 @@ createCachedSelector(
     ),
 });
         `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector} from 'reselect-kit';
 
@@ -568,7 +565,7 @@ createCachedSelector(
     keySelector: createPropSelector<{ prop2: number }>().prop2(),
 });
         `,
-                output: stripIndent`
+      output: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';
 import {createPropSelector, defaultKeySelector} from 'reselect-kit';
 
@@ -579,23 +576,19 @@ createCachedSelector(
     keySelector: defaultKeySelector,
 });
         `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-        ],
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
     },
-);
+  ],
+});
 
-ruleTester.run(
-    'no-different-props-cached-struct',
-    noDifferentPropsRule,
+ruleTester.run('no-different-props-cached-struct', noDifferentPropsRule, {
+  valid: [
     {
-        valid: [
-            {
-                code: stripIndent`
+      code: stripIndent`
 import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
@@ -608,9 +601,9 @@ createCachedStructuredSelector({
     ...getDefaultOptions(),
 });
       `,
-            },
-            {
-                code: stripIndent`
+    },
+    {
+      code: stripIndent`
 import {createCachedStructuredSelector, createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
@@ -627,137 +620,134 @@ createCachedStructuredSelector({
     ...getDefaultOptions(),
 });
       `,
-            },
-        ],
-        invalid: [
-            {
-                code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
-
-createCachedStructuredSelector({
-    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-})({
-    keySelector: createPropSelector<{ prop1: string }>().prop1(),
-});
-      `,
-                output: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
-
-createCachedStructuredSelector({
-    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-})({
-    keySelector: createPropSelector<{ prop1: number }>().prop1(),
-});
-      `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
-
-const getDefaultOptions = () => ({
-    keySelector: createPropSelector<{ prop1: string }>().prop1(),
-});
-
-createCachedStructuredSelector({
-    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-})({
-    ...getDefaultOptions()
-});
-      `,
-                output: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
-
-const getDefaultOptions = () => ({
-    keySelector: createPropSelector<{ prop1: string }>().prop1(),
-});
-
-createCachedStructuredSelector({
-    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-})({
-    ...getDefaultOptions(),
-    keySelector: createPropSelector<{ prop1: number }>().prop1()
-});
-      `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
-
-const getDefaultOptions = () => ({
-    keySelector: createPropSelector<{ prop2: number }>().prop2(),
-});
-
-createCachedStructuredSelector({
-    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-})({
-    ...getDefaultOptions()
-});
-      `,
-                output: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
-
-const getDefaultOptions = () => ({
-    keySelector: createPropSelector<{ prop2: number }>().prop2(),
-});
-
-createCachedStructuredSelector({
-    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-})({
-    ...getDefaultOptions(),
-    keySelector: createPropSelector<{ prop1: number }>().prop1()
-});
-      `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
-
-createCachedStructuredSelector({
-    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-})({
-    keySelector: createPropSelector<{ prop2: number }>().prop2(),
-});
-      `,
-                output: stripIndent`
-import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
-
-createCachedStructuredSelector({
-    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-})({
-    keySelector: createPropSelector<{ prop1: number }>().prop1(),
-});
-      `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-        ],
-    });
-
-ruleTester.run(
-    'no-different-props-cached-seq',
-    noDifferentPropsRule,
+    },
+  ],
+  invalid: [
     {
-        valid: [
-            {
-                code: stripIndent`
+      code: stripIndent`
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
+
+createCachedStructuredSelector({
+    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    keySelector: createPropSelector<{ prop1: string }>().prop1(),
+});
+      `,
+      output: stripIndent`
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
+
+createCachedStructuredSelector({
+    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+      `,
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
+
+const getDefaultOptions = () => ({
+    keySelector: createPropSelector<{ prop1: string }>().prop1(),
+});
+
+createCachedStructuredSelector({
+    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    ...getDefaultOptions()
+});
+      `,
+      output: stripIndent`
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
+
+const getDefaultOptions = () => ({
+    keySelector: createPropSelector<{ prop1: string }>().prop1(),
+});
+
+createCachedStructuredSelector({
+    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    ...getDefaultOptions(),
+    keySelector: createPropSelector<{ prop1: number }>().prop1()
+});
+      `,
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
+
+const getDefaultOptions = () => ({
+    keySelector: createPropSelector<{ prop2: number }>().prop2(),
+});
+
+createCachedStructuredSelector({
+    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    ...getDefaultOptions()
+});
+      `,
+      output: stripIndent`
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
+
+const getDefaultOptions = () => ({
+    keySelector: createPropSelector<{ prop2: number }>().prop2(),
+});
+
+createCachedStructuredSelector({
+    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    ...getDefaultOptions(),
+    keySelector: createPropSelector<{ prop1: number }>().prop1()
+});
+      `,
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
+
+createCachedStructuredSelector({
+    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    keySelector: createPropSelector<{ prop2: number }>().prop2(),
+});
+      `,
+      output: stripIndent`
+import {createCachedStructuredSelector, createPropSelector} from 'reselect-kit';
+
+createCachedStructuredSelector({
+    prop1: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+      `,
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+  ],
+});
+
+ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
+  valid: [
+    {
+      code: stripIndent`
 import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
@@ -770,9 +760,9 @@ createCachedSequenceSelector([
     ...getDefaultOptions(),
 });
       `,
-            },
-            {
-                code: stripIndent`
+    },
+    {
+      code: stripIndent`
 import {createCachedSequenceSelector, createPropSelector, stringComposeKeySelectors} from 'reselect-kit';
 
 const getDefaultOptions = () => ({
@@ -789,127 +779,126 @@ createCachedSequenceSelector([
     ...getDefaultOptions(),
 });
       `,
-            },
-        ],
-        invalid: [
-            {
-                code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
-
-createCachedSequenceSelector([
-    (state: unknown, props: { prop1: number }) => props.prop1,
-])({
-    keySelector: createPropSelector<{ prop1: string }>().prop1(),
-});
-      `,
-                output: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
-
-createCachedSequenceSelector([
-    (state: unknown, props: { prop1: number }) => props.prop1,
-])({
-    keySelector: createPropSelector<{ prop1: number }>().prop1(),
-});
-      `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
-
-const getDefaultOptions = () => ({
-    keySelector: createPropSelector<{ prop1: string }>().prop1(),
-});
-
-createCachedSequenceSelector([
-    (state: unknown, props: { prop1: number }) => props.prop1,
-])({
-    ...getDefaultOptions()
-});
-      `,
-                output: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
-
-const getDefaultOptions = () => ({
-    keySelector: createPropSelector<{ prop1: string }>().prop1(),
-});
-
-createCachedSequenceSelector([
-    (state: unknown, props: { prop1: number }) => props.prop1,
-])({
-    ...getDefaultOptions(),
-    keySelector: createPropSelector<{ prop1: number }>().prop1()
-});
-      `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
-
-const getDefaultOptions = () => ({
-    keySelector: createPropSelector<{ prop2: number }>().prop2(),
-});
-
-createCachedSequenceSelector([
-    (state: unknown, props: { prop1: number }) => props.prop1,
-])({
-    ...getDefaultOptions()
-});
-      `,
-                output: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
-
-const getDefaultOptions = () => ({
-    keySelector: createPropSelector<{ prop2: number }>().prop2(),
-});
-
-createCachedSequenceSelector([
-    (state: unknown, props: { prop1: number }) => props.prop1,
-])({
-    ...getDefaultOptions(),
-    keySelector: createPropSelector<{ prop1: number }>().prop1()
-});
-      `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-            {
-                code: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
-
-createCachedSequenceSelector([
-    (state: unknown, props: { prop1: number }) => props.prop1,
-])({
-    keySelector: createPropSelector<{ prop2: number }>().prop2(),
-});
-      `,
-                output: stripIndent`
-import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
-
-createCachedSequenceSelector([
-    (state: unknown, props: { prop1: number }) => props.prop1,
-])({
-    keySelector: createPropSelector<{ prop1: number }>().prop1(),
-});
-      `,
-                errors: [
-                    {
-                        messageId: Errors.DifferentProps,
-                    },
-                ],
-            },
-        ],
     },
-);
+  ],
+  invalid: [
+    {
+      code: stripIndent`
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
+
+createCachedSequenceSelector([
+    (state: unknown, props: { prop1: number }) => props.prop1,
+])({
+    keySelector: createPropSelector<{ prop1: string }>().prop1(),
+});
+      `,
+      output: stripIndent`
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
+
+createCachedSequenceSelector([
+    (state: unknown, props: { prop1: number }) => props.prop1,
+])({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+      `,
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
+
+const getDefaultOptions = () => ({
+    keySelector: createPropSelector<{ prop1: string }>().prop1(),
+});
+
+createCachedSequenceSelector([
+    (state: unknown, props: { prop1: number }) => props.prop1,
+])({
+    ...getDefaultOptions()
+});
+      `,
+      output: stripIndent`
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
+
+const getDefaultOptions = () => ({
+    keySelector: createPropSelector<{ prop1: string }>().prop1(),
+});
+
+createCachedSequenceSelector([
+    (state: unknown, props: { prop1: number }) => props.prop1,
+])({
+    ...getDefaultOptions(),
+    keySelector: createPropSelector<{ prop1: number }>().prop1()
+});
+      `,
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
+
+const getDefaultOptions = () => ({
+    keySelector: createPropSelector<{ prop2: number }>().prop2(),
+});
+
+createCachedSequenceSelector([
+    (state: unknown, props: { prop1: number }) => props.prop1,
+])({
+    ...getDefaultOptions()
+});
+      `,
+      output: stripIndent`
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
+
+const getDefaultOptions = () => ({
+    keySelector: createPropSelector<{ prop2: number }>().prop2(),
+});
+
+createCachedSequenceSelector([
+    (state: unknown, props: { prop1: number }) => props.prop1,
+])({
+    ...getDefaultOptions(),
+    keySelector: createPropSelector<{ prop1: number }>().prop1()
+});
+      `,
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
+
+createCachedSequenceSelector([
+    (state: unknown, props: { prop1: number }) => props.prop1,
+])({
+    keySelector: createPropSelector<{ prop2: number }>().prop2(),
+});
+      `,
+      output: stripIndent`
+import {createCachedSequenceSelector, createPropSelector} from 'reselect-kit';
+
+createCachedSequenceSelector([
+    (state: unknown, props: { prop1: number }) => props.prop1,
+])({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+      `,
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+        },
+      ],
+    },
+  ],
+});
