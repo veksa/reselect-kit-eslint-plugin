@@ -12,6 +12,14 @@ export function getTypeArguments(
     return type.typeArguments ?? [];
 }
 
+const isRestParameter = (parameter: ts.Symbol) => {
+    const [declaration] = parameter.getDeclarations() ?? [];
+
+    return declaration !== undefined
+        && ts.isParameter(declaration)
+        && declaration.dotDotDotToken !== undefined;
+};
+
 export const getSelectorProps = (
     selectorType: ts.Type,
     typeChecker: ts.TypeChecker,
@@ -34,7 +42,20 @@ export const getSelectorProps = (
         props.valueDeclaration,
     );
 
-    const [params] = getTypeArguments(nodeType as ts.TypeReference, typeChecker);
+    // reselect and reselect-kit type the props as a rest parameter holding a
+    // tuple: `(state: State, ...params: [props: Props]) => Result`. An empty
+    // tuple means the selector accepts no props, so there is nothing to read -
+    // falling back to the tuple itself would report Array.prototype as props.
+    if (isRestParameter(props) || typeChecker.isTupleType(nodeType)) {
+        const [params] = getTypeArguments(
+            nodeType as ts.TypeReference,
+            typeChecker,
+        );
 
-    return typeChecker.getPropertiesOfType(params ?? nodeType);
+        return params === undefined ? [] : typeChecker.getPropertiesOfType(params);
+    }
+
+    // Hand written key selectors still declare props as a plain parameter,
+    // e.g. `(state: State, props: Props) => Props['id']`.
+    return typeChecker.getPropertiesOfType(nodeType);
 };

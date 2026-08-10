@@ -6,6 +6,7 @@ import {isCachedSelectorCreator} from '../utils/isCachedSelectorCreator';
 import {getParametersFromProps} from '../utils/getParametersFromProps';
 import {getImportFix} from '../utils/getImportFix';
 import {getSelectorProps} from '../utils/getSelectorProps';
+import {getCachedSelectorProps} from '../utils/getCachedSelectorProps';
 import {getCommaTokenFix} from '../utils/getCommaTokenFix';
 import {getKeySelectorFix} from '../utils/getKeySelectorFix';
 import {AST_NODE_TYPES, TSESLint} from '@typescript-eslint/utils';
@@ -54,7 +55,7 @@ const create: IRule['create'] = context => {
         CallExpression(callExpression) {
             const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
-            if (isCachedSelectorCreator(tsNode)) {
+            if (isCachedSelectorCreator(tsNode, typeChecker)) {
                 const cachedOptions = getCachedSelectorCreatorOptions(
                     tsNode,
                     typeChecker,
@@ -66,14 +67,12 @@ const create: IRule['create'] = context => {
                         keySelector,
                         keySelector.valueDeclaration,
                     );
-                    const cachedSelectorType = typeChecker.getTypeAtLocation(tsNode);
-
                     const keySelectorProps = getSelectorProps(
                         keySelectorType,
                         typeChecker,
                     );
-                    const cachedSelectorProps = getSelectorProps(
-                        cachedSelectorType,
+                    const cachedSelectorProps = getCachedSelectorProps(
+                        tsNode,
                         typeChecker,
                     );
 
