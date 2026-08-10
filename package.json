@@ -37,6 +37,7 @@
   "scripts": {
     "compile": "tsc --noEmit",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "build": "shx rm -rf lib && tsc --outDir lib -m es2015 --declaration && tsc --outDir lib/cjs"
   },
   "dependencies": {
