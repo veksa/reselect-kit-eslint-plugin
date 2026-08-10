@@ -74,7 +74,7 @@ const create: IRule['create'] = (context) => {
           const selectorParameters = getParametersFromProps(cachedSelectorProps, typeChecker);
           const keySelectorParameters = getParametersFromProps(keySelectorProps, typeChecker);
 
-          if (areParametersDifferent(selectorParameters, keySelectorParameters)) {
+          if (areParametersDifferent(selectorParameters, keySelectorParameters, typeChecker)) {
             const selectorParametersString = selectorParameters
               .map((prop) => ` ${prop.name}: ${prop.typeString} `)
               .join(';');

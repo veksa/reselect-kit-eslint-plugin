@@ -48,6 +48,35 @@ cachedSeq([
 });
 `,
     },
+    // re-reselect spells its structured creator the other way round.
+    {
+      code: stripIndent`
+import {createStructuredCachedSelector} from '@veksa/re-reselect';
+import {createPropSelector} from 'reselect-kit';
+
+createStructuredCachedSelector({
+    a: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+`,
+    },
+    // `withTypes` hands back the same creator with the state pre-typed.
+    {
+      code: stripIndent`
+import {createCachedSelector} from '@veksa/re-reselect';
+import {createPropSelector} from 'reselect-kit';
+
+createCachedSelector.withTypes<unknown>()(
+    [
+        (state: unknown, props: { prop1: number }) => props.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+`,
+    },
   ],
   invalid: [
     {
@@ -153,6 +182,102 @@ import {createPropSelector} from 'reselect-kit';
 import {cachedConst, prop} from './aliases';
 
 cachedConst(
+    [
+        (state: unknown, props: { prop1: number }) => props.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+`,
+      errors: [
+        {
+          messageId: DifferentPropsErrors.DifferentProps,
+        },
+      ],
+    },
+    {
+      code: stripIndent`
+import {createStructuredCachedSelector} from '@veksa/re-reselect';
+
+createStructuredCachedSelector({
+    a: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    keySelector: (state: unknown, props: { prop2: string }) => props.prop2,
+});
+`,
+      output: stripIndent`
+import {createPropSelector} from 'reselect-kit';
+import {createStructuredCachedSelector} from '@veksa/re-reselect';
+
+createStructuredCachedSelector({
+    a: (state: unknown, props: { prop1: number }) => props.prop1,
+})({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+`,
+      errors: [
+        {
+          messageId: DifferentPropsErrors.DifferentProps,
+        },
+      ],
+    },
+    // Pre-typed through `withTypes`, used inline.
+    {
+      code: stripIndent`
+import {createCachedSelector} from '@veksa/re-reselect';
+
+createCachedSelector.withTypes<unknown>()(
+    [
+        (state: unknown, props: { prop1: number }) => props.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: (state: unknown, props: { prop2: string }) => props.prop2,
+});
+`,
+      output: stripIndent`
+import {createPropSelector} from 'reselect-kit';
+import {createCachedSelector} from '@veksa/re-reselect';
+
+createCachedSelector.withTypes<unknown>()(
+    [
+        (state: unknown, props: { prop1: number }) => props.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: createPropSelector<{ prop1: number }>().prop1(),
+});
+`,
+      errors: [
+        {
+          messageId: DifferentPropsErrors.DifferentProps,
+        },
+      ],
+    },
+    // Pre-typed through `withTypes`, stored in a binding first.
+    {
+      code: stripIndent`
+import {createCachedSelector} from '@veksa/re-reselect';
+
+const createTyped = createCachedSelector.withTypes<unknown>();
+
+createTyped(
+    [
+        (state: unknown, props: { prop1: number }) => props.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: (state: unknown, props: { prop2: string }) => props.prop2,
+});
+`,
+      output: stripIndent`
+import {createPropSelector} from 'reselect-kit';
+import {createCachedSelector} from '@veksa/re-reselect';
+
+const createTyped = createCachedSelector.withTypes<unknown>();
+
+createTyped(
     [
         (state: unknown, props: { prop1: number }) => props.prop1,
     ],

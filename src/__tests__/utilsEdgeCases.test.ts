@@ -3,7 +3,12 @@ import { TSESTree } from '@typescript-eslint/utils';
 import { getSelectorProps, getTypeArguments } from '../utils/getSelectorProps';
 import { getCachedSelectorProps } from '../utils/getCachedSelectorProps';
 import { getImportDeclaration } from '../utils/getImportDeclaration';
-import { getParametersFromProps, unknownPropType } from '../utils/getParametersFromProps';
+import {
+  getParametersFromProps,
+  unknownPropType,
+  ParameterInfo,
+} from '../utils/getParametersFromProps';
+import { areParametersDifferent } from '../utils/areParametersDifferent';
 import { isPropOptional } from '../utils/isPropOptional';
 import { getKeySelector } from '../utils/getKeySelector';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
@@ -174,18 +179,53 @@ describe('getParametersFromProps', () => {
     expect(getParametersFromProps([prop], stubChecker({}))).toEqual([
       {
         name: 'prop1',
+        type: undefined,
         typeString: unknownPropType,
-        isOptional: undefined,
+        isOptional: false,
       },
     ]);
   });
 });
 
-describe('isPropOptional', () => {
-  it('treats a prop without declarations as required', () => {
-    const prop = stubSymbol({ getDeclarations: () => undefined });
+describe('areParametersDifferent', () => {
+  const parameter = (overrides: Partial<ParameterInfo>): ParameterInfo => ({
+    name: 'prop1',
+    type: undefined,
+    typeString: unknownPropType,
+    isOptional: false,
+    ...overrides,
+  });
 
-    expect(isPropOptional(prop)).toBeFalsy();
+  it('falls back to the printed type when neither prop resolved to one', () => {
+    const checker = stubChecker({});
+
+    expect(areParametersDifferent([parameter({})], [parameter({})], checker)).toBe(false);
+  });
+
+  it('keeps props apart when only one of them resolved to a type', () => {
+    const checker = stubChecker({ isTypeAssignableTo: () => true });
+
+    expect(
+      areParametersDifferent(
+        [parameter({ type: stubType(), typeString: 'number' })],
+        [parameter({})],
+        checker,
+      ),
+    ).toBe(true);
+  });
+});
+
+describe('isPropOptional', () => {
+  it('treats a prop carrying no flags as required', () => {
+    const prop = stubSymbol({});
+
+    expect(isPropOptional(prop)).toBe(false);
+  });
+
+  it('reads optionality off the symbol flags', () => {
+    const prop = stubSymbol({ flags: ts.SymbolFlags.Optional });
+
+    expect(isPropOptional(prop)).toBe(true);
   });
 });
 

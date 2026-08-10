@@ -4,7 +4,28 @@ const cachedSelectorCreators = [
   'createCachedSelector',
   'createCachedStructuredSelector',
   'createCachedSequenceSelector',
+  // re-reselect names its structured creator the other way round.
+  'createStructuredCachedSelector',
 ];
+
+/**
+ * `createCachedSelector.withTypes<State>()` hands back the same creator with
+ * the state pre-typed. That call has no symbol of its own, so a call site going
+ * through it resolves to nothing and would be skipped entirely - silently, and
+ * for every rule. Unwrapping it back to the creator it was built from covers
+ * both spellings: used inline, and stored in a binding first.
+ */
+const unwrapWithTypes = (expression: ts.Expression): ts.Expression => {
+  if (
+    ts.isCallExpression(expression) &&
+    ts.isPropertyAccessExpression(expression.expression) &&
+    expression.expression.name.text === 'withTypes'
+  ) {
+    return unwrapWithTypes(expression.expression.expression);
+  }
+
+  return expression;
+};
 
 /**
  * Symbol the callee ultimately refers to.
@@ -34,9 +55,10 @@ const resolveDeclaredSymbol = (
     declaration !== undefined && ts.isVariableDeclaration(declaration)
       ? declaration.initializer
       : undefined;
+  const source = initializer === undefined ? undefined : unwrapWithTypes(initializer);
 
-  if (initializer !== undefined && ts.isIdentifier(initializer)) {
-    const initializerSymbol = typeChecker.getSymbolAtLocation(initializer);
+  if (source !== undefined && ts.isIdentifier(source)) {
+    const initializerSymbol = typeChecker.getSymbolAtLocation(source);
 
     if (initializerSymbol !== undefined) {
       return resolveDeclaredSymbol(initializerSymbol, typeChecker, seen);
@@ -66,7 +88,7 @@ export const isCachedSelectorCreator = (
   const leftHandSideExpression = callExpression.expression;
 
   if (ts.isCallExpression(leftHandSideExpression)) {
-    const creator = leftHandSideExpression.expression;
+    const creator = unwrapWithTypes(leftHandSideExpression.expression);
     const declaredName = getDeclaredName(creator, typeChecker);
 
     return cachedSelectorCreators.includes(declaredName ?? creator.getText());
