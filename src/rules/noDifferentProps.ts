@@ -13,7 +13,9 @@ import {AST_NODE_TYPES, TSESLint} from '@typescript-eslint/utils';
 import {getParserServices} from "@typescript-eslint/utils/eslint-utils";
 
 type MessageIds = 'different-props';
-type Options = [];
+type Options = [{composer?: string}?];
+
+export const defaultComposer = 'stringComposeKeySelectors';
 
 type IRule = TSESLint.RuleModule<MessageIds, Options>;
 
@@ -37,13 +39,16 @@ const meta: IRule['meta'] = {
                     type: 'string',
                 },
             },
+            additionalProperties: false,
         },
     ],
     type: 'problem',
 };
 
 const create: IRule['create'] = context => {
-    const composer = 'stringComposeKeySelectors';
+    // Which helper the autofix reaches for when a selector needs more than one
+    // prop composed into its key.
+    const [{composer = defaultComposer} = {}] = context.options;
 
     const sourceCode = context.sourceCode;
     const {esTreeNodeToTSNodeMap, program} = getParserServices(
