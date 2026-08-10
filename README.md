@@ -20,13 +20,15 @@ yarn add eslint-plugin-reselect-kit --dev
 
 ### Requirements
 
-| | |
-|---|---|
-| ESLint | 9 or later, flat config only |
+|                             |                                                 |
+| --------------------------- | ----------------------------------------------- |
+| ESLint                      | 9 or 10, flat config only                       |
 | `@typescript-eslint/parser` | 8.44 or later, configured with type information |
-| TypeScript | 5.9 or later |
+| TypeScript                  | 5.4 up to 6.0                                   |
+| Node                        | 20, 22 or 24                                    |
 
-Verified against ESLint 10.8 and `@typescript-eslint` 8.66.
+CI runs the suite against every combination above. The TypeScript ceiling comes from
+`@typescript-eslint`, which supports `>=4.8.4 <6.1.0`.
 
 ## Setup
 
@@ -36,20 +38,20 @@ Both rules read the types of your selectors, so the parser has to be pointed at 
 ```js
 // eslint.config.js
 import tsParser from '@typescript-eslint/parser';
-import {reselectKitPlugin} from 'eslint-plugin-reselect-kit';
+import { reselectKitPlugin } from 'eslint-plugin-reselect-kit';
 
 export default [
-    {
-        files: ['**/*.ts', '**/*.tsx'],
-        languageOptions: {
-            parser: tsParser,
-            parserOptions: {
-                project: './tsconfig.json',
-                tsconfigRootDir: import.meta.dirname,
-            },
-        },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
-    ...reselectKitPlugin.configs.all,
+  },
+  ...reselectKitPlugin.configs.all,
 ];
 ```
 
@@ -58,13 +60,13 @@ rules on as errors. To change a severity or pass options, add a block after it:
 
 ```js
 export default [
-    ...reselectKitPlugin.configs.all,
-    {
-        rules: {
-            'reselect-kit/require-key-selector': 'warn',
-            'reselect-kit/no-different-props': ['error', {composer: 'arrayComposeKeySelectors'}],
-        },
+  ...reselectKitPlugin.configs.all,
+  {
+    rules: {
+      'reselect-kit/require-key-selector': 'warn',
+      'reselect-kit/no-different-props': ['error', { composer: 'arrayComposeKeySelectors' }],
     },
+  },
 ];
 ```
 
@@ -74,19 +76,27 @@ Every call of the shape `creator(...)(options)` is checked, where `creator` is o
 `createCachedSelector`, `createCachedStructuredSelector` or
 `createCachedSequenceSelector`.
 
-The creator is resolved through its import, so a barrel module that renames it on the
-way out is still checked:
+The callee is resolved back to the declaration it came from, so a barrel module that
+renames a creator on the way out is still checked. Both an import alias and a plain
+re-binding are followed:
 
 ```ts
 // utils/redux.ts
 export {createCachedStructuredSelector as cachedStruct} from 'reselect-kit';
+export const cachedSelector = createCachedSelector;
 
-// anywhere.ts - checked, even though the call says `cachedStruct`
+// anywhere.ts - checked, even though the calls use the local names
 cachedStruct({...})({keySelector: ...});
+cachedSelector([...], combiner)({keySelector: ...});
 ```
 
-Options handed over as an expression (`creator(...)(getOptions())`) are still reported,
-but cannot be fixed automatically - there is no object literal to rewrite.
+Two limits are worth knowing:
+
+- Options handed over as an expression (`creator(...)(getOptions())`) are reported but
+  not fixed - there is no object literal to rewrite.
+- For a selector taking more than one parametric argument
+  (`(state, first: A, second: B) => ...`) only the first is read as the props bag, since
+  that is all `createPropSelector` can describe. The report and the fix cover `A` alone.
 
 ## Rules
 
@@ -97,17 +107,15 @@ selector itself declares - a different name, a different type, or a different
 optionality all count.
 
 ```ts
-import {createCachedSelector} from '@veksa/re-reselect';
-import {createPropSelector} from 'reselect-kit';
+import { createCachedSelector } from '@veksa/re-reselect';
+import { createPropSelector } from 'reselect-kit';
 
 // error: selector parameters = { itemId: number }, key selector parameters = { id: number }
 createCachedSelector(
-    [
-        (state: State, props: {itemId: number}) => state.items[props.itemId],
-    ],
-    item => item,
+  [(state: State, props: { itemId: number }) => state.items[props.itemId]],
+  (item) => item,
 )({
-    keySelector: createPropSelector<{id: number}>().id(),
+  keySelector: createPropSelector<{ id: number }>().id(),
 });
 ```
 
@@ -115,12 +123,10 @@ The fix rewrites `keySelector` to match the selector and adds the imports it nee
 
 ```ts
 createCachedSelector(
-    [
-        (state: State, props: {itemId: number}) => state.items[props.itemId],
-    ],
-    item => item,
+  [(state: State, props: { itemId: number }) => state.items[props.itemId]],
+  (item) => item,
 )({
-    keySelector: createPropSelector<{ itemId: number }>().itemId(),
+  keySelector: createPropSelector<{ itemId: number }>().itemId(),
 });
 ```
 
@@ -140,8 +146,8 @@ line up.
 
 #### Options
 
-| Option | Default | Description |
-|---|---|---|
+| Option     | Default                       | Description                                                                                                                                              |
+| ---------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `composer` | `'stringComposeKeySelectors'` | Helper the fix wraps multiple prop selectors in. Set it to `'arrayComposeKeySelectors'`, or to your own composer, and the fix imports that name instead. |
 
 ```js
@@ -155,26 +161,19 @@ under a single shared key.
 
 ```ts
 // error: Cached selector can`t work without key selector
-createCachedSelector(
-    [
-        (state: State) => state.items,
-    ],
-    items => items,
-)({});
+createCachedSelector([(state: State) => state.items], (items) => items)({});
 ```
 
 The fix inserts `defaultKeySelector` and imports it:
 
 ```ts
-import {defaultKeySelector} from 'reselect-kit';
+import { defaultKeySelector } from 'reselect-kit';
 
 createCachedSelector(
-    [
-        (state: State) => state.items,
-    ],
-    items => items,
+  [(state: State) => state.items],
+  (items) => items,
 )({
-    keySelector: defaultKeySelector
+  keySelector: defaultKeySelector,
 });
 ```
 
@@ -185,6 +184,8 @@ rule.
 
 ```bash
 yarn compile        # type check
+yarn lint           # oxlint
+yarn fmt            # oxfmt, `yarn fmt:check` to verify only
 yarn test           # run the rule tests
 yarn test:coverage  # the suite is kept at 100%
 yarn build          # emit lib/
