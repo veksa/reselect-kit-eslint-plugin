@@ -398,6 +398,46 @@ createCachedSelector(
         },
       ],
     },
+    // Props that differ in nothing but optionality print the same type, so the
+    // report has to spell the optionality out - otherwise both sides of the
+    // message read alike and the error looks like the rule misfiring.
+    {
+      code: stripIndent`
+import {createCachedSelector} from '@veksa/re-reselect';
+import {createPropSelector} from 'reselect-kit';
+
+createCachedSelector(
+    [
+        (state: unknown, props: { prop1?: number }) => props.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: createPropSelector<{ prop1: number | undefined }>().prop1(),
+});
+        `,
+      output: stripIndent`
+import {createCachedSelector} from '@veksa/re-reselect';
+import {createPropSelector} from 'reselect-kit';
+
+createCachedSelector(
+    [
+        (state: unknown, props: { prop1?: number }) => props.prop1,
+    ],
+    () => 1,
+)({
+    keySelector: createPropSelector<{ prop1?: number | undefined }>().prop1(),
+});
+        `,
+      errors: [
+        {
+          messageId: Errors.DifferentProps,
+          data: {
+            selectorParameters: '{ prop1?: number | undefined }',
+            keySelectorParameters: '{ prop1: number | undefined }',
+          },
+        },
+      ],
+    },
     {
       code: stripIndent`
 import {createCachedSelector} from '@veksa/re-reselect';

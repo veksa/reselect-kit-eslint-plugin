@@ -3,7 +3,7 @@ import { getKeySelector } from '../utils/getKeySelector';
 import { areParametersDifferent } from '../utils/areParametersDifferent';
 import { getPropSelectorText } from '../utils/getPropSelectorText';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
-import { getParametersFromProps } from '../utils/getParametersFromProps';
+import { ParameterInfo, getParametersFromProps } from '../utils/getParametersFromProps';
 import { getImportFix } from '../utils/getImportFix';
 import { getSelectorProps } from '../utils/getSelectorProps';
 import { getCachedSelectorProps } from '../utils/getCachedSelectorProps';
@@ -18,6 +18,23 @@ type Options = [{ composer?: string }?];
 export const defaultComposer = 'stringComposeKeySelectors';
 
 type IRule = TSESLint.RuleModule<MessageIds, Options>;
+
+/**
+ * Optionality has to be printed, not just compared.
+ *
+ * `typeToString` only spells out the `undefined` of an optional prop under
+ * `strictNullChecks` - a project that compiles without it prints `stopLoss?:
+ * number` as plain `number`. Leaving the question mark out there would report a
+ * selector and a key selector that differ in nothing but optionality with two
+ * sides that read exactly alike, which looks like the rule misfiring.
+ */
+const getParametersText = (parameters: ParameterInfo[]) => {
+  const parametersString = parameters
+    .map((prop) => ` ${prop.name}${prop.isOptional ? '?' : ''}: ${prop.typeString} `)
+    .join(';');
+
+  return `{${parametersString}}`;
+};
 
 export enum Errors {
   DifferentProps = 'different-props',
@@ -75,20 +92,12 @@ const create: IRule['create'] = (context) => {
           const keySelectorParameters = getParametersFromProps(keySelectorProps, typeChecker);
 
           if (areParametersDifferent(selectorParameters, keySelectorParameters, typeChecker)) {
-            const selectorParametersString = selectorParameters
-              .map((prop) => ` ${prop.name}: ${prop.typeString} `)
-              .join(';');
-
-            const keySelectorParametersString = keySelectorParameters
-              .map((prop) => ` ${prop.name}: ${prop.typeString} `)
-              .join(';');
-
             context.report({
               messageId: Errors.DifferentProps,
               node: callExpression.arguments[0],
               data: {
-                selectorParameters: `{${selectorParametersString}}`,
-                keySelectorParameters: `{${keySelectorParametersString}}`,
+                selectorParameters: getParametersText(selectorParameters),
+                keySelectorParameters: getParametersText(keySelectorParameters),
               },
               fix(fixer: any) {
                 const argument = callExpression.arguments[0];
